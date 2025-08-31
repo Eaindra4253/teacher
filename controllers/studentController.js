@@ -2,36 +2,82 @@ import Student from "../models/Student.js";
 
 // Get all students
 export const getStudents = async (req, res) => {
-  const students = await Student.find();
-  res.json(students);
+  try {
+    const students = await Student.find();
+    res.json(students);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
 // Get single student
 export const getStudent = async (req, res) => {
-  const student = await Student.findById(req.params.id);
-  if (!student) return res.status(404).json({ message: "Student not found" });
-  res.json(student);
+  try {
+    const student = await Student.findById(req.params.id);
+    if (!student) return res.status(404).json({ message: "Student not found" });
+    res.json(student);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
 // Create new student
 export const createStudent = async (req, res) => {
-  const newStudent = new Student(req.body);
-  const saved = await newStudent.save();
-  res.status(201).json(saved);
+  try {
+    const { name, grade, subject, email, phone } = req.body;
+
+    // Ensure subject is an array
+    const newStudent = new Student({
+      name,
+      grade,
+      subject: Array.isArray(subject) ? subject : [subject],
+      email,
+      phone,
+    });
+
+    const saved = await newStudent.save();
+    res.status(201).json(saved);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
 // Update student
 export const updateStudent = async (req, res) => {
-  const updated = await Student.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-  });
-  if (!updated) return res.status(404).json({ message: "Student not found" });
-  res.json(updated);
+  try {
+    const { name, grade, subject, email, phone } = req.body;
+
+    const updated = await Student.findByIdAndUpdate(
+      req.params.id,
+      {
+        name,
+        grade,
+        subject: Array.isArray(subject) ? subject : [subject],
+        email,
+        phone,
+      },
+      { new: true }
+    );
+
+    if (!updated) return res.status(404).json({ message: "Student not found" });
+    res.json(updated);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
 // Delete student
 export const deleteStudent = async (req, res) => {
-  const deleted = await Student.findByIdAndDelete(req.params.id);
-  if (!deleted) return res.status(404).json({ message: "Student not found" });
-  res.json(deleted);
+  try {
+    const deleted = await Student.findByIdAndDelete(req.params.id);
+    if (!deleted) return res.status(404).json({ message: "Student not found" });
+    res.json(deleted);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
 };
