@@ -1,3 +1,4 @@
+// controllers/studentController.js
 import Student from "../models/Student.js";
 
 // Get all students
@@ -26,15 +27,16 @@ export const getStudent = async (req, res) => {
 // Create new student
 export const createStudent = async (req, res) => {
   try {
-    const { name, grade, subject, email, phone } = req.body;
+    const { name, grade, subject, email, phone, address, school } = req.body;
 
-    // Ensure subject is an array
     const newStudent = new Student({
       name,
       grade,
       subject: Array.isArray(subject) ? subject : [subject],
       email,
       phone,
+      address,
+      school,
     });
 
     const saved = await newStudent.save();
@@ -48,7 +50,7 @@ export const createStudent = async (req, res) => {
 // Update student
 export const updateStudent = async (req, res) => {
   try {
-    const { name, grade, subject, email, phone } = req.body;
+    const { name, grade, subject, email, phone, address, school } = req.body;
 
     const updated = await Student.findByIdAndUpdate(
       req.params.id,
@@ -58,6 +60,8 @@ export const updateStudent = async (req, res) => {
         subject: Array.isArray(subject) ? subject : [subject],
         email,
         phone,
+        address,
+        school,
       },
       { new: true }
     );
